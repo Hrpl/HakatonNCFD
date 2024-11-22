@@ -8,6 +8,7 @@ namespace SportEvents.Domain.Common.Response;
 
 public class SportEventResponse
 {
+    public int Id { get; set; }
     public string TypeEvent { get; set; } = string.Empty;
     public string Composition { get; set; } = string.Empty;
     public string EventName { get; set; } = string.Empty;

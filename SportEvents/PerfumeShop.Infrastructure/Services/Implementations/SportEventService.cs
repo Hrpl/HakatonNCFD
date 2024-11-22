@@ -28,6 +28,7 @@ public class SportEventService : ISportEventService
             .Join("Compositions as c", "c.Id", "se.CompositionId")
             .Select("c.Name as Composition",
             "ts.Name as TypeEvent",
+            "se.Id",
             "se.EventName",
             "se.EventDescription",
             "se.StartDate",

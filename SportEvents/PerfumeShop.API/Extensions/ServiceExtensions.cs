@@ -15,5 +15,6 @@ public static class ServiceExtensions
     {
         services.AddScoped<IDbConnectionManager, DbConnectionManager>();
         services.AddScoped<ISportEventService, SportEventService>();
+        services.AddScoped<IFavouritesEventService, FavouritesEventService>();
     }
 }

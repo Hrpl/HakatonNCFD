@@ -19,8 +19,6 @@ namespace SportEvents.API.Controllers
             _sportEventService = sportEventService;
         }
 
-
-
         // GET: api/<ValuesController>
         [HttpPost]
         public async Task<ActionResult<IEnumerable<SportEventResponse>>> Get(PaginateRequest req)
