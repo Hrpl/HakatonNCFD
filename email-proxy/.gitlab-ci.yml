@@ -1,0 +1,17 @@
+include:
+  - project: 'docker/deploy/deploy-templates'
+    file:
+      - 'yaml/.gitlab-ci-set-variables.yml'
+      - 'yaml/.gitlab-ci-build-dot-net.yml'
+      - 'yaml/.gitlab-ci-init.yml'
+      - 'yaml/.gitlab-ci-deploy.yml'
+      - 'yaml/.gitlab-ci-set-permissions.yml'
+      - 'yaml/.gitlab-ci-release.yml'
+
+stages:
+  - set-variables
+  - build
+  - init
+  - deploy
+  - set-permissions
+  - release
