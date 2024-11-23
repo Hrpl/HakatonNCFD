@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PerfumeShop.Domain.Entities;
 using SportEvents.Domain.Entities;
 
 namespace PerfumeShop.Infrastructure.Context;
@@ -12,10 +11,10 @@ public class ApplicationDbContext : DbContext
     public DbSet<FavouritesEvent> FavouritesEvents { get; set; }
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> dbContextOptions) : base(dbContextOptions)
     {
+        Database.Migrate();
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        base.OnConfiguring(optionsBuilder);
     }
 }

@@ -1,34 +1,30 @@
-ARG PROJECT_NAME="email-proxy"	
-ARG ENVIRONMENT
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 
-ARG DEFINE_CONSTANTS
-ARG ENVIRONMENT
-ARG PROJECT_NAME
-
-WORKDIR /source
+WORKDIR /app
+EXPOSE 5006
+ARG BUILD_CONFIGURATION=Release
 
 # copy csproj and restore as distinct layers
-COPY *.sln .
-COPY ${PROJECT_NAME}/*.csproj ./${PROJECT_NAME}/
-RUN dotnet restore --interactive
+COPY "email-proxy/email-proxy.sln" "email-proxy/"
+COPY "email-proxy/email-proxy/email-proxy.csproj" "email-proxy/"
+RUN dotnet restore "email-proxy/email-proxy.csproj"
 
 # copy everything else and build app
-COPY ${PROJECT_NAME}/. ./${PROJECT_NAME}/
-COPY ${PROJECT_NAME}-config/appsettings.${ENVIRONMENT}.json ./${PROJECT_NAME}/
+COPY "email-proxy/email-proxy" "email-proxy/"
+COPY "email-proxy/email-proxy-config/appsettings.json" "./email-proxy/"
 
-WORKDIR /source/${PROJECT_NAME}
-RUN dotnet build ${PROJECT_NAME}.csproj /p:DefineConstants=$DEFINE_CONSTANTS -c release
-RUN dotnet publish -c release -o /app --no-restore --no-build
+WORKDIR "/app/email-proxy"
+RUN dotnet build "email-proxy.csproj" -c $BUILD_CONFIGURATION -o /app/build
+#RUN dotnet publish -c release -o /app --no-restore 
 
+FROM build AS publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "email-proxy.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+    
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
-	
-ARG PROJECT_NAME
-ARG ENVIRONMENT
-ENV PROJECT_NAME_DLL=${PROJECT_NAME}".dll"
-ENV CURRENT_ENVIRONMENT="--environment="${ENVIRONMENT}
-WORKDIR /app
-COPY --from=build-env /app ./
 
-ENTRYPOINT "dotnet" $PROJECT_NAME_DLL $CURRENT_ENVIRONMENT
+WORKDIR /app
+COPY --from=publish ./app/publish ./
+
+ENTRYPOINT "dotnet" "email-proxy.dll"

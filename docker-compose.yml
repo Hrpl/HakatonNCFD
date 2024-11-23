@@ -1,0 +1,104 @@
+
+networks:
+  network:
+   driver: bridge
+
+volumes:
+  postgres_data:
+  postgres_data2:
+
+services:
+
+  nginx:
+    container_name: nginx
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: always
+    ports:
+      - "80:80"
+    networks:
+      - network
+    depends_on:
+      - user
+      - events
+      - email
+
+  email:
+    build:
+      context: .
+      dockerfile: email-proxy/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5006
+      - ASPNETCORE_HTTPS_PORTS=5006
+    ports:
+      - '5006:5006'
+    networks:
+      - network
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+
+  user:
+    build:
+      context: .
+      dockerfile: UserService/UserService.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5257
+    ports:
+      - '5257:5257'
+    networks:
+      - network
+    depends_on:
+      - db-user
+      - email
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+
+  db-user:
+    image: postgres:latest
+    container_name: userServiceDbPostgreSQL
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 2208
+      POSTGRES_DB: SportShedule
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - network
+
+  db-events:
+    image: postgres:latest
+    container_name: evetServiceDbPostgreSQL
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 2208
+      POSTGRES_DB: SportEvents
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data2:/var/lib/postgresql/data
+    networks:
+      - network
+
+  events:
+    build:
+      context: .
+      dockerfile: SportEvents/PerfumeShop.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5074
+    ports:
+      - '5074:5074'
+    networks:
+      - network
+    depends_on:
+      - db-events
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro

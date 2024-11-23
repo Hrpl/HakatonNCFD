@@ -3,16 +3,15 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+EXPOSE 5257
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["UserService.API/UserService.API.csproj", "UserService.API/"]
-RUN dotnet restore "./UserService.API/UserService.API.csproj"
+COPY ["UserService/UserService.API/UserService.API.csproj", "UserService/UserService.API/"]
+RUN dotnet restore "./UserService/UserService.API/UserService.API.csproj"
 COPY . .
-WORKDIR "/src/UserService.API"
+WORKDIR "/src/UserService/UserService.API"
 RUN dotnet build "./UserService.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish

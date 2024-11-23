@@ -11,7 +11,11 @@ public class ApplicationDbContext : IdentityDbContext<AppUser, AppRole, int>
     public DbSet<Jwt> JwtTokens { get; set; }
     public DbSet<EmailEvent> EmailEvents { get; set; }
     public DbSet<UserProfile> UserProfiles { get; set; }
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) 
+    {
+        Database.Migrate();
+    }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         
