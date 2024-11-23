@@ -23,21 +23,7 @@ services:
       - user
       - events
       - email
-      - react
 
-  react:
-    build: 
-        context: ./sporthub
-        dockerfile: Dockerfile
-    ports:
-        - '3000:3000'
-    stdin_open: true
-    tty: true
-    networks:
-      - network
-    depends_on:
-      - user
-      - events
 
   email:
     build:
