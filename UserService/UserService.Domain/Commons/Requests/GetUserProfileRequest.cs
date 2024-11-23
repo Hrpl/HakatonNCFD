@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SportEvents.Domain.Common.Request;
+namespace UserService.Domain.Commons.Requests;
 
-public class FavouritesEventRequest
+public class GetUserProfileRequest
 {
     public string JWT { get; set; }
 }

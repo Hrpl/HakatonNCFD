@@ -10,4 +10,5 @@ namespace UserService.Infrastructure.Services.Interfaces;
 public interface IJwtHelper
 {
     public JwtResponse CreateJwtAsync(int userId, CancellationToken ct);
+    public Task<int> DecodJwt(string accessToken);
 }

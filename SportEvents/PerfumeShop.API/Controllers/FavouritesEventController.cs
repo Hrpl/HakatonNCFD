@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SportEvents.Domain.Common.Request;
 using SportEvents.Infrastructure.Services.Interfaces;
-using System.Security.Claims;
-using System.Text;
-using Newtonsoft.Json.Linq;
+using System.IdentityModel.Tokens.Jwt;
 using SportEvents.Domain.Common.Response;
+using SportEvents.Domain.Models;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace SportEvents.API.Controllers
@@ -22,11 +20,11 @@ namespace SportEvents.API.Controllers
 
         // GET: api/<FavouritesEventController>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SportEventResponse>>> Get(FavouritesEventRequest req)
+        public async Task<ActionResult<IEnumerable<SportEventResponse>>> Get([FromQuery] string jwt)
         {
-            var id = await DecodJwt(req.JWT);
+            var id = await DecodJwt(jwt);
 
-            var response = _favouritesEventService.GetAnyFavouritesEvent(id);
+            var response = await _favouritesEventService.GetAnyFavouritesEvent(id);
 
             if (response != null) return Ok(response);
             else return BadRequest();
@@ -34,25 +32,28 @@ namespace SportEvents.API.Controllers
 
         // POST api/<FavouritesEventController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async void Post(FavouritesEventModel model)
         {
+            await _favouritesEventService.CreateFavouritesEvent(model);
+            Created();
         }
 
         private static async Task<int> DecodJwt(string accessToken)
         {
-            var payload = accessToken.Split(".")[1];
+
+            var tokenHandler = new JwtSecurityTokenHandler();
 
             try
             {
-                byte[] bytes = Convert.FromBase64String(payload);
+                var jwtToken = tokenHandler.ReadJwtToken(accessToken);
 
-                // Получение строки из массива байт
-                var jsonString = Encoding.UTF8.GetString(bytes);
+                var claims = jwtToken.Payload;
+                foreach (var claim in claims)
+                {
+                    if (claim.Key == "userId") return Convert.ToInt32( claim.Value);
+                }
 
-                JObject jsonObject = JObject.Parse(jsonString);
-                int idValue = (int)jsonObject["id"];
-                return idValue;
-                
+                throw new InvalidOperationException("UserId not found in the token");
             }
             catch (Exception ex)
             {

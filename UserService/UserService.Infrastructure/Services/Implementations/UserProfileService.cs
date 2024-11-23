@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UserService.Domain.Commons.Requests;
+using UserService.Domain.Commons.Response;
 using UserService.Domain.Models;
 using UserService.Infrastructure.Services.Interfaces;
 
@@ -24,6 +25,23 @@ public class UserProfileService : IUserProfileService
             .AsInsert(model);
 
         await _query.ExecuteAsync(query);
+    }
+
+    public async Task<GetUserProfileResponse> GetUserProfileAsync(int id)
+    {
+        var query = _query.Query("UserProfiles")
+            .Where("AppUserId", id)
+            .Select("AppUserId",
+            "Name",
+            "Surname",
+            "Patronymic",
+            "Age",
+            "Male",
+            "City");
+
+        var result = await _query.FirstAsync<GetUserProfileResponse>(query);
+        if (result is null) throw new Exception("Профиль не найден.");
+        return result;
     }
 
     public async Task<int> UpdateUserProfileAsync(UpdateUserProfileRequest model)

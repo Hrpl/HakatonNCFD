@@ -1,4 +1,5 @@
-﻿using SportEvents.Domain.Models;
+﻿using SportEvents.Domain.Common.Response;
+using SportEvents.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +12,5 @@ public interface IFavouritesEventService
 {
     public Task CreateFavouritesEvent(FavouritesEventModel model);
 
-    public Task<IEnumerable<FavouritesEventModel>> GetAnyFavouritesEvent(int id);
+    public Task<IEnumerable<SportEventResponse>> GetAnyFavouritesEvent(int id);
 }

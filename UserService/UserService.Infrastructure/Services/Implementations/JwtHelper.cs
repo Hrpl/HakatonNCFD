@@ -38,4 +38,26 @@ public class JwtHelper : IJwtHelper
         var token = Convert.ToBase64String(randomBytes);
         return token;
     }
+
+    public async Task<int> DecodJwt(string accessToken)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+
+        try
+        {
+            var jwtToken = tokenHandler.ReadJwtToken(accessToken);
+
+            var claims = jwtToken.Payload;
+            foreach (var claim in claims)
+            {
+                if (claim.Key == "userId") return Convert.ToInt32(claim.Value);
+            }
+
+            throw new InvalidOperationException("UserId not found in the token");
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error decoding JWT: {ex.Message}", ex);
+        }
+    }
 }
