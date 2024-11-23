@@ -15,6 +15,8 @@ public class UserProfileModel
     public int? Age { get; set; }
     public string? Male { get; set; }
     public string? City { get; set; }
+    public string? BackgroundColor { get; set; }
+    public string? FontColor { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt{get; set;}
 }

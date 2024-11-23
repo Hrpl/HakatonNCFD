@@ -37,7 +37,9 @@ public class UserProfileService : IUserProfileService
             "Patronymic",
             "Age",
             "Male",
-            "City");
+            "City",
+            "BackgroundColor",
+            "FontColor");
 
         var result = await _query.FirstAsync<GetUserProfileResponse>(query);
         if (result is null) throw new Exception("Профиль не найден.");
