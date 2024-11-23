@@ -26,6 +26,12 @@ public class SportEventService : ISportEventService
         var query = _queryFactory.Query("SportEvents as se")
             .Join("TypeSports as ts", "ts.Id", "se.TypeId")
             .Join("Compositions as c", "c.Id", "se.CompositionId")
+            .Where("se.Participants", ">", request.CountPeopleMin)
+            .Where("se.Participants", "<", request.CountPeopleMax)
+            .Where("se.StartDate", ">", request.Start)
+            .Where("se.EndDate", "<", request.End)
+            .When(request.TypeSport != "", q => q.Where("ts.Name", request.TypeSport))
+            .When(request.Country != "", q => q.Where("se.Country", request.Country))
             .Select("c.Name as Composition",
             "ts.Name as TypeEvent",
             "se.Id",

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SportEvents.Domain.Common.Request;
 
-public class PaginateRequest
+public class PaginateRequest : Filter
 {
     public int Page { get; set; }
     public int Count { get; set; }
